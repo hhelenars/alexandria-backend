@@ -15,7 +15,7 @@ public class Libro {
     private int paginas;
     private String categoria;
 
-    @Column(name = "anio_publicacion")
+    @Column(name = "año_publicacion")
     private Integer anioPublicacion;
 
     private String descripcion;
