@@ -1,5 +1,6 @@
 package com.alexandrianuevo.BackendAlexandriaNuevo.service;
 
+import com.alexandrianuevo.BackendAlexandriaNuevo.anotaciones.Subrayado;
 import com.alexandrianuevo.BackendAlexandriaNuevo.model.Biblioteca;
 import com.alexandrianuevo.BackendAlexandriaNuevo.model.Libro;
 import com.alexandrianuevo.BackendAlexandriaNuevo.model.Usuario;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class BibliotecaService {
@@ -22,7 +24,7 @@ public class BibliotecaService {
     private LibroRepository libroRepository;
 
     // Guardar un nuevo registro en la biblioteca (lectura o favorito)
-    public Biblioteca guardarRegistro(Usuario usuario, Libro libro, boolean enLectura, boolean esFavorito, String anotaciones) {
+    public Biblioteca guardarRegistro(Usuario usuario, Libro libro, boolean enLectura, boolean esFavorito,  Map<Integer, List<Subrayado>> anotaciones) {
         Biblioteca registro = new Biblioteca();
         registro.setUsuarioId(usuario.getId());
         registro.setLibroId(libro.getId());
@@ -56,5 +58,22 @@ public class BibliotecaService {
 
         return libros;
     }
+
+    // Actualizar solo las anotaciones de un registro de biblioteca existente
+    public void actualizarAnotaciones(Long idBiblioteca,  Map<Integer, List<Subrayado>> nuevasAnotaciones) {
+        Biblioteca biblioteca = bibliotecaRepository.findById(idBiblioteca)
+                .orElseThrow(() -> new RuntimeException("Registro de biblioteca no encontrado"));
+
+        biblioteca.setAnotaciones(nuevasAnotaciones);
+        bibliotecaRepository.save(biblioteca);
+    }
+
+    public  Map<Integer, List<Subrayado>> obtenerAnotaciones(Long idBiblioteca) {
+        Biblioteca biblioteca = bibliotecaRepository.findById(idBiblioteca)
+                .orElseThrow(() -> new RuntimeException("Registro de biblioteca no encontrado"));
+
+        return biblioteca.getAnotaciones();
+    }
+
 }
 

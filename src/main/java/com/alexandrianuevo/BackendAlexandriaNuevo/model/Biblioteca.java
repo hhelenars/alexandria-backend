@@ -1,8 +1,16 @@
 package com.alexandrianuevo.BackendAlexandriaNuevo.model;
 
+import com.alexandrianuevo.BackendAlexandriaNuevo.anotaciones.Subrayado;
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.*;
+import org.hibernate.annotations.Type;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import com.vladmihalcea.hibernate.type.json.JsonType;
+
+
 
 @Entity
 @Table(name = "bibliotecas")
@@ -24,8 +32,9 @@ public class Biblioteca {
     @Column(name = "en_lectura")
     private boolean enLectura;
 
+    @Type(JsonBinaryType.class)
     @Column(name = "anotaciones", columnDefinition = "jsonb")
-    private String anotaciones;
+    private Map<Integer, List<Subrayado>> anotaciones;
 
     @Column(name = "fecha")
     private LocalDateTime fecha;
@@ -68,11 +77,11 @@ public class Biblioteca {
         this.enLectura = enLectura;
     }
 
-    public String getAnotaciones() {
+    public Map<Integer, List<Subrayado>> getAnotaciones() {
         return anotaciones;
     }
 
-    public void setAnotaciones(String anotaciones) {
+    public void setAnotaciones(Map<Integer, List<Subrayado>> anotaciones) {
         this.anotaciones = anotaciones;
     }
 
