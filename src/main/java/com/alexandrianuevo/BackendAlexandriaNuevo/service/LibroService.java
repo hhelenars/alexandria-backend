@@ -2,6 +2,7 @@ package com.alexandrianuevo.BackendAlexandriaNuevo.service;
 
 import com.alexandrianuevo.BackendAlexandriaNuevo.model.Libro;
 import com.alexandrianuevo.BackendAlexandriaNuevo.repository.LibroRepository;
+import com.alexandrianuevo.BackendAlexandriaNuevo.response.LibroResponse;
 import com.alexandrianuevo.BackendAlexandriaNuevo.util.LibroComparator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,16 +20,18 @@ public class LibroService {
     @Autowired
     private LibroRepository libroRepository;
 
-    public List<Libro> buscarPorTituloOAutor(String texto) {
+    public List<LibroResponse> buscarPorTituloOAutor(String texto) {
         List<Libro> libros = libroRepository.findByTituloContainingIgnoreCaseOrAutorContainingIgnoreCase(texto, texto);
-        libros.sort(new LibroComparator());
-        return libros;
+        libros.sort(new LibroComparator(texto));
+        return libros.stream()
+                .map(libro -> new LibroResponse(libro.getTitulo(), libro.getAutor()))
+                .toList();
     }
 
-    public List<Libro> obtenerTodos() {
-        List<Libro> libros = libroRepository.findAll();
-        libros.sort(new LibroComparator());
-        return libros;
+    public List<LibroResponse> obtenerTodos() {
+        return libroRepository.findAll().stream()
+                .map(libro -> new LibroResponse(libro.getTitulo(), libro.getAutor()))
+                .toList();
     }
 
     public byte[] descargarArchivoEPUB(String ruta) throws Exception {

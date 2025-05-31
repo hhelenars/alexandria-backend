@@ -1,6 +1,7 @@
 package com.alexandrianuevo.BackendAlexandriaNuevo.controller;
 
 import com.alexandrianuevo.BackendAlexandriaNuevo.model.Libro;
+import com.alexandrianuevo.BackendAlexandriaNuevo.response.LibroResponse;
 import com.alexandrianuevo.BackendAlexandriaNuevo.service.LibroService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -21,14 +22,14 @@ public class LibroController {
 
     // Buscar libros por título y autor
     @GetMapping("/buscar")
-    public List<Libro> buscarPorTituloOAutor(@RequestParam String texto) {
+    public List<LibroResponse> buscarPorTituloOAutor(@RequestParam String texto) {
         return libroService.buscarPorTituloOAutor(texto);
     }
 
 
     // Obtener todos los libros
     @GetMapping("/todos")
-    public List<Libro> getTodos() {
+    public List<LibroResponse> getTodos() {
         return libroService.obtenerTodos();
     }
 
