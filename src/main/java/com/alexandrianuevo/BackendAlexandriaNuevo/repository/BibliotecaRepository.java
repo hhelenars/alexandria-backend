@@ -11,7 +11,7 @@ import java.util.List;
 public interface BibliotecaRepository extends JpaRepository<Biblioteca, Long> {
 
     // Obtener todos los libros que un usuario ha marcado como lectura
-    List<Biblioteca> findByUsuarioIdAndEnLectura(Long usuarioId, boolean esLectura);
+    List<Biblioteca> findByUsuarioIdAndEnLectura(Long usuarioId, boolean enLectura);
 
     // Obtener todos los libros que un usuario ha marcado como favorito
     List<Biblioteca> findByUsuarioIdAndEsFavorito(Long usuarioId, boolean esFavorito);

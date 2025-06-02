@@ -24,40 +24,21 @@ public class LibroService {
         List<Libro> libros = libroRepository.findByTituloContainingIgnoreCaseOrAutorContainingIgnoreCase(texto, texto);
         libros.sort(new LibroComparator(texto));
         return libros.stream()
-                .map(libro -> new LibroResponse(libro.getTitulo(), libro.getAutor()))
+                .map(libro -> new LibroResponse(libro.getId(), libro.getTitulo(), libro.getAutor()))
                 .toList();
     }
 
     public List<LibroResponse> obtenerTodos() {
         return libroRepository.findAll().stream()
-                .map(libro -> new LibroResponse(libro.getTitulo(), libro.getAutor()))
+                .map(libro -> new LibroResponse(libro.getId(), libro.getTitulo(), libro.getAutor()))
                 .toList();
     }
 
-    public byte[] descargarArchivoEPUB(String ruta) throws Exception {
-        String supabaseUrl = "https://rrkjpjcyrofglmbllrqs.supabase.co";
-        String apiKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJya2pwamN5cm9mZ2xtYmxscnFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE0Njg4MzcsImV4cCI6MjA1NzA0NDgzN30.By_gbv2tSjlKQ7JOS6rEJLKbvbtaizxxpsvCJpuxenI";
-        String bucket = "epubs";
-        String url = supabaseUrl + "/storage/v1/object/" + bucket + "/" + ruta;
-
-        System.out.println("🛰️ URL de descarga: " + url); // debug
-
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .header("apikey", apiKey)
-                .header("Authorization", "Bearer " + apiKey)
-                .build();
-
-        HttpResponse<byte[]> response = client.send(request, HttpResponse.BodyHandlers.ofByteArray());
-
-        if (response.statusCode() == 404) {
-            throw new FileNotFoundException("Archivo no encontrado en Supabase");
-        }
-
-        return response.body();
+    public String obtenerNombreArchivo(Long idLibro) {
+        return libroRepository.findById(idLibro)
+                .map(Libro::getArchivoUrl)
+                .orElse(null);
     }
-
 
 }
 

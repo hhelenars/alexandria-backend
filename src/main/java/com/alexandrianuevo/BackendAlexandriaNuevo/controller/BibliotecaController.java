@@ -7,7 +7,9 @@ import com.alexandrianuevo.BackendAlexandriaNuevo.model.Libro;
 import com.alexandrianuevo.BackendAlexandriaNuevo.model.Usuario;
 import com.alexandrianuevo.BackendAlexandriaNuevo.repository.LibroRepository;
 import com.alexandrianuevo.BackendAlexandriaNuevo.repository.UsuarioRepository;
+import com.alexandrianuevo.BackendAlexandriaNuevo.response.LibroResponse;
 import com.alexandrianuevo.BackendAlexandriaNuevo.service.BibliotecaService;
+import com.alexandrianuevo.BackendAlexandriaNuevo.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,60 +22,57 @@ import java.util.Map;
 @RequestMapping("/api/biblioteca")
 @CrossOrigin(origins = "*")
 public class BibliotecaController {
+
+
     @Autowired
     private BibliotecaService bibliotecaService;
     @Autowired
     private UsuarioRepository usuarioRepository;
     @Autowired
     private LibroRepository libroRepository;
+    @Autowired
+    private JwtUtil jwtUtil;
 
-    // Añadir libro a la biblioteca
-    @PostMapping("/guardar")
-    public Biblioteca guardarRegistro(@RequestParam Long usuarioId,
-                                      @RequestParam Long libroId,
-                                      @RequestParam boolean esLectura,
-                                      @RequestParam boolean esFavorito,
-                                      @RequestParam(required = false) Map<Integer, List<Subrayado>> anotaciones) {
-        Usuario usuario = usuarioRepository.findById(usuarioId).orElse(null);
-        Libro libro = libroRepository.findById(libroId).orElse(null);
-
-        if (usuario != null && libro != null) {
-            return bibliotecaService.guardarRegistro(usuario, libro, esLectura, esFavorito, anotaciones);
-        }
-
-        return null; // si no existe el usuario o el libro
-    }
 
     @GetMapping("/lecturas")
-    public List<Libro> obtenerLecturas(@RequestParam  Long usuarioId) {
-        return bibliotecaService.obtenerLecturas(usuarioId);
+    public  ResponseEntity<List<LibroResponse>> obtenerLecturas(@RequestHeader("Authorization") String authHeader) {
+        try {
+            String token = authHeader.replace("Bearer ", "");
+            Long usuarioId = jwtUtil.extraerIdUsuario(token);
+
+            if (jwtUtil.estaExpirado(token)) {
+                return ResponseEntity.status(401).build(); // Token caducado
+            }
+
+            List<LibroResponse> lecturas = bibliotecaService.obtenerLecturas(usuarioId);
+            return ResponseEntity.ok(lecturas);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(403).build(); // Token inválido
+        }
     }
 
     @GetMapping("/favoritos")
-    public List<Libro> obtenerFavoritos(@RequestParam  Long usuarioId) {
-        return bibliotecaService.obtenerFavoritos(usuarioId);
-    }
-
-    @PutMapping("/anotaciones")
-    public ResponseEntity<Void> actualizarAnotaciones(@RequestBody Anotacion anotacion) {
+    public  ResponseEntity<List<LibroResponse>> obtenerFavoritos(@RequestHeader("Authorization") String authHeader) {
         try {
-            bibliotecaService.actualizarAnotaciones(anotacion.getIdBiblioteca(), anotacion.getAnotaciones());
-            return ResponseEntity.ok().build();
+            String token = authHeader.replace("Bearer ", "");
+            Long usuarioId = jwtUtil.extraerIdUsuario(token);
+
+            if (jwtUtil.estaExpirado(token)) {
+                return ResponseEntity.status(401).build(); // Token caducado
+            }
+
+            List<LibroResponse> favoritos = bibliotecaService.obtenerFavoritos(usuarioId);
+            return ResponseEntity.ok(favoritos);
+
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(403).build(); // Token inválido
         }
     }
 
 
-    @GetMapping("/anotaciones/{idBiblioteca}")
-    public ResponseEntity<Map<Integer, List<Subrayado>>> obtenerAnotaciones(@PathVariable Long idBiblioteca) {
-        try {
-            Map<Integer, List<Subrayado>> anotaciones = bibliotecaService.obtenerAnotaciones(idBiblioteca);
-            return ResponseEntity.ok(anotaciones);
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
+
+
 
 
 
