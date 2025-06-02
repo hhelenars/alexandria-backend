@@ -20,4 +20,29 @@ public class JwtUtil {
                 .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
                 .compact();
     }
+
+    public Long extraerIdUsuario(String token) {
+        Claims claims = getClaims(token);
+        return Long.parseLong(claims.getSubject());
+    }
+
+    public boolean validarToken(String token, Long usuarioId) {
+        try {
+            Long idEnToken = extraerIdUsuario(token);
+            return idEnToken.equals(usuarioId) && !estaExpirado(token);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private Claims getClaims(String token) {
+        return Jwts.parser()
+                .setSigningKey(SECRET_KEY)
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    public boolean estaExpirado(String token) {
+        return getClaims(token).getExpiration().before(new Date());
+    }
 }

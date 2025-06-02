@@ -1,11 +1,13 @@
 package com.alexandrianuevo.BackendAlexandriaNuevo.service;
 
+import com.alexandrianuevo.BackendAlexandriaNuevo.anotaciones.Anotacion;
 import com.alexandrianuevo.BackendAlexandriaNuevo.anotaciones.Subrayado;
 import com.alexandrianuevo.BackendAlexandriaNuevo.model.Biblioteca;
 import com.alexandrianuevo.BackendAlexandriaNuevo.model.Libro;
 import com.alexandrianuevo.BackendAlexandriaNuevo.model.Usuario;
 import com.alexandrianuevo.BackendAlexandriaNuevo.repository.BibliotecaRepository;
 import com.alexandrianuevo.BackendAlexandriaNuevo.repository.LibroRepository;
+import com.alexandrianuevo.BackendAlexandriaNuevo.response.LibroResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,57 +25,37 @@ public class BibliotecaService {
     @Autowired
     private LibroRepository libroRepository;
 
-    // Guardar un nuevo registro en la biblioteca (lectura o favorito)
-    public Biblioteca guardarRegistro(Usuario usuario, Libro libro, boolean enLectura, boolean esFavorito,  Map<Integer, List<Subrayado>> anotaciones) {
-        Biblioteca registro = new Biblioteca();
-        registro.setUsuarioId(usuario.getId());
-        registro.setLibroId(libro.getId());
-        registro.setEsFavorito(esFavorito);
-        registro.setEnLectura(enLectura);
-        registro.setAnotaciones(anotaciones);
-        registro.setFecha(LocalDateTime.now());
-        return bibliotecaRepository.save(registro);
-    }
+
 
     // FAVORITOS
-    public List<Libro> obtenerFavoritos(Long usuarioId) {
+    public List<LibroResponse> obtenerFavoritos(Long usuarioId) {
         List<Biblioteca> registros = bibliotecaRepository.findByUsuarioIdAndEsFavorito(usuarioId, true);
-        List<Libro> libros = new ArrayList<>();
+        List<LibroResponse> favoritos = new ArrayList<>();
 
         for (Biblioteca registro : registros) {
-            libros.add(libroRepository.findById(registro.getLibroId()).get());
+            libroRepository.findById(registro.getLibroId()).ifPresent(libro -> {
+                favoritos.add(new LibroResponse(libro.getId(), libro.getTitulo(), libro.getAutor()));
+            });
         }
-
-        return libros;
+        return favoritos;
     }
 
     // LECTURAS
-    public List<Libro> obtenerLecturas(Long usuarioId) {
+    public List<LibroResponse> obtenerLecturas(Long usuarioId) {
         List<Biblioteca> registros = bibliotecaRepository.findByUsuarioIdAndEnLectura(usuarioId, true);
-        List<Libro> libros = new ArrayList<>();
+        List<LibroResponse> lecturas = new ArrayList<>();
+
 
         for (Biblioteca registro : registros) {
-            libros.add(libroRepository.findById(registro.getLibroId()).get());
+            libroRepository.findById(registro.getLibroId()).ifPresent(libro -> {
+                lecturas.add(new LibroResponse(libro.getId(), libro.getTitulo(), libro.getAutor()));
+            });
+            System.out.println(registro.getId());
         }
+        if (lecturas.isEmpty())
+            System.out.println("No hay nada en lecturas");
 
-        return libros;
+        return lecturas;
     }
-
-    // Actualizar solo las anotaciones de un registro de biblioteca existente
-    public void actualizarAnotaciones(Long idBiblioteca,  Map<Integer, List<Subrayado>> nuevasAnotaciones) {
-        Biblioteca biblioteca = bibliotecaRepository.findById(idBiblioteca)
-                .orElseThrow(() -> new RuntimeException("Registro de biblioteca no encontrado"));
-
-        biblioteca.setAnotaciones(nuevasAnotaciones);
-        bibliotecaRepository.save(biblioteca);
-    }
-
-    public  Map<Integer, List<Subrayado>> obtenerAnotaciones(Long idBiblioteca) {
-        Biblioteca biblioteca = bibliotecaRepository.findById(idBiblioteca)
-                .orElseThrow(() -> new RuntimeException("Registro de biblioteca no encontrado"));
-
-        return biblioteca.getAnotaciones();
-    }
-
 }
 

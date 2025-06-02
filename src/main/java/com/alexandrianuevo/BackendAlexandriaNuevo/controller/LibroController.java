@@ -26,26 +26,20 @@ public class LibroController {
         return libroService.buscarPorTituloOAutor(texto);
     }
 
-
     // Obtener todos los libros
     @GetMapping("/todos")
     public List<LibroResponse> getTodos() {
         return libroService.obtenerTodos();
     }
 
-    @GetMapping("/descargar")
-    public ResponseEntity<byte[]> descargarLibro(@RequestParam String archivo) {
-        try {
-            byte[] contenido = libroService.descargarArchivoEPUB(archivo);
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + archivo + "\"")
-                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                    .body(contenido);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.internalServerError().build();
+    @GetMapping("/archivo-url")
+    public ResponseEntity<String> obtenerArchivoUrl(@RequestParam  Long id) {
+        String archivoUrl = libroService.obtenerNombreArchivo(id);
+        if (archivoUrl != null) {
+            return ResponseEntity.ok(archivoUrl);
+        } else {
+            return ResponseEntity.notFound().build();
         }
     }
-
 
 }

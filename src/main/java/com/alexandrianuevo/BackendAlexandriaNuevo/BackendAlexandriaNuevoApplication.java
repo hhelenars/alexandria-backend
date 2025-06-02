@@ -20,7 +20,6 @@ public class BackendAlexandriaNuevoApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		System.out.println("SERVIDOR LISTO");
-
 	}
 }
 
