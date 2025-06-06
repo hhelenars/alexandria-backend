@@ -1,19 +1,15 @@
 package com.alexandrianuevo.BackendAlexandriaNuevo.controller;
 
-import com.alexandrianuevo.BackendAlexandriaNuevo.anotaciones.Anotacion;
-import com.alexandrianuevo.BackendAlexandriaNuevo.anotaciones.Subrayado;
-import com.alexandrianuevo.BackendAlexandriaNuevo.model.Biblioteca;
-import com.alexandrianuevo.BackendAlexandriaNuevo.model.Libro;
-import com.alexandrianuevo.BackendAlexandriaNuevo.model.Usuario;
+import com.alexandrianuevo.BackendAlexandriaNuevo.model.Anotacion;
 import com.alexandrianuevo.BackendAlexandriaNuevo.repository.LibroRepository;
 import com.alexandrianuevo.BackendAlexandriaNuevo.repository.UsuarioRepository;
+import com.alexandrianuevo.BackendAlexandriaNuevo.request.AnotacionesRequest;
 import com.alexandrianuevo.BackendAlexandriaNuevo.response.LibroResponse;
 import com.alexandrianuevo.BackendAlexandriaNuevo.service.BibliotecaService;
 import com.alexandrianuevo.BackendAlexandriaNuevo.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.google.gson.Gson;
 
 import java.util.List;
 import java.util.Map;
@@ -70,10 +66,72 @@ public class BibliotecaController {
         }
     }
 
+    @PostMapping("/enlectura")
+    public ResponseEntity<?> registrarLectura(@RequestHeader("Authorization") String authHeader,
+                                              @RequestParam Long libroId) {
+        try {
+            String token = authHeader.replace("Bearer ", "");
+            Long usuarioId = jwtUtil.extraerIdUsuario(token);
+
+            if (jwtUtil.estaExpirado(token)) {
+                return ResponseEntity.status(401).body("Token expirado");
+            }
+
+            bibliotecaService.registrarLectura(usuarioId, libroId);
+            return ResponseEntity.ok().build();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(403).body("Error al registrar lectura");
+        }
+    }
+
+    @PostMapping("/guardar-anotaciones")
+    public ResponseEntity<?> guardarAnotaciones(
+            @RequestHeader("Authorization") String authHeader,
+            @RequestBody AnotacionesRequest request) {
+
+        try {
+            String token = authHeader.replace("Bearer ", "");
+            Long usuarioId = jwtUtil.extraerIdUsuario(token);
+
+            if (jwtUtil.estaExpirado(token)) {
+                return ResponseEntity.status(401).body("Token expirado");
+            }
+
+            bibliotecaService.guardarAnotaciones(usuarioId, request.getLibroId(), request.getAnotaciones());
+            return ResponseEntity.ok().build();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error al guardar anotaciones");
+        }
+    }
 
 
+    @GetMapping("/recuperar-anotaciones")
+    public ResponseEntity<?> obtenerAnotaciones(@RequestHeader("Authorization") String authHeader,
+                                                @RequestParam Long libroId) {
+        try {
+            String token = authHeader.replace("Bearer ", "");
+            Long usuarioId = jwtUtil.extraerIdUsuario(token);
 
+            if (jwtUtil.estaExpirado(token)) {
+                return ResponseEntity.status(401).body("Token expirado");
+            }
 
+            Map<Integer, List<Anotacion>> anotaciones = bibliotecaService.obtenerAnotaciones(usuarioId, libroId);
 
+            if (anotaciones == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            return ResponseEntity.ok(anotaciones);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(403).body("Error al recuperar anotaciones");
+        }
+    }
 
 }
