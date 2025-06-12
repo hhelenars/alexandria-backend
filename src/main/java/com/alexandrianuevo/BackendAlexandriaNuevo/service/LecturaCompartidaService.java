@@ -16,6 +16,16 @@ public class LecturaCompartidaService {
     @Autowired
     private LecturaCompartidaRepository lecturaCompartidaRepository;
 
+    // Service impl:
+    public Long obtenerLecturaCompartidaId(Long usuarioId1, Long usuarioId2, Long libroId) {
+        // Busca la lectura compartida independientemente del orden de los usuarios
+        LecturaCompartida lectura = lecturaCompartidaRepository
+                .findByUsuariosAndLibro(usuarioId1, usuarioId2, libroId);
+        return (lectura != null) ? lectura.getId() : null;
+    }
+
+
+
     // Compartir un libro con otro usuario
     public LecturaCompartida compartirLectura(Long usuarioId, Long usuarioDestinoId, Long libroId) {
         LecturaCompartida lectura = new LecturaCompartida();

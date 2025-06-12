@@ -28,4 +28,14 @@ public interface LecturaCompartidaRepository extends JpaRepository<LecturaCompar
             "(lc.usuarioId = :id1 AND lc.usuarioDestinoId = :id2) " +
             "OR (lc.usuarioId = :id2 AND lc.usuarioDestinoId = :id1)")
     List<LecturaCompartida> findEntreAmbosUsuarios(Long id1, Long id2);
+
+
+    // Busca la lectura compartida entre dos usuarios y ese libro (en cualquier orden)
+    @Query("SELECT lc FROM LecturaCompartida lc WHERE " +
+            "((lc.usuarioId = :u1 AND lc.usuarioDestinoId = :u2) OR (lc.usuarioId = :u2 AND lc.usuarioDestinoId = :u1)) " +
+            "AND lc.libroId = :libroId")
+    LecturaCompartida findByUsuariosAndLibro(@Param("u1") Long usuarioId1,
+                                             @Param("u2") Long usuarioId2,
+                                             @Param("libroId") Long libroId);
+
 }

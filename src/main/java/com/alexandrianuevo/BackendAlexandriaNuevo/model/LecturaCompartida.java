@@ -3,6 +3,13 @@ package com.alexandrianuevo.BackendAlexandriaNuevo.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.vladmihalcea.hibernate.type.json.JsonType;
+import org.hibernate.annotations.Type;
+
 
 @Entity
 @Table(name = "lecturas_compartidas")
@@ -23,6 +30,19 @@ public class LecturaCompartida {
 
     @Column(name = "fecha_compartido")
     private LocalDateTime fechaCompartido;
+
+    @Type(JsonType.class)
+    @Column(columnDefinition = "jsonb") // Para Postgres, si usas MySQL pon "json"
+    private Map<Integer, List<Anotacion>> anotaciones = new HashMap<>();
+
+    // ... getters y setters ...
+    public Map<Integer, List<Anotacion>> getAnotaciones() {
+        return anotaciones;
+    }
+    public void setAnotaciones(Map<Integer, List<Anotacion>> anotaciones) {
+        this.anotaciones = anotaciones;
+    }
+
 
 
 
