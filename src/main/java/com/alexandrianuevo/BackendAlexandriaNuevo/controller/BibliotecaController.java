@@ -30,7 +30,7 @@ public class BibliotecaController {
     private JwtUtil jwtUtil;
 
 
-    @GetMapping("/lecturas")
+    @GetMapping("/enlecturas")
     public  ResponseEntity<List<LibroResponse>> obtenerLecturas(@RequestHeader("Authorization") String authHeader) {
         try {
             String token = authHeader.replace("Bearer ", "");
@@ -66,7 +66,7 @@ public class BibliotecaController {
         }
     }
 
-    @PostMapping("/enlectura")
+    @PostMapping("/guardar-enlectura")
     public ResponseEntity<?> registrarLectura(@RequestHeader("Authorization") String authHeader,
                                               @RequestParam Long libroId) {
         try {
@@ -78,6 +78,26 @@ public class BibliotecaController {
             }
 
             bibliotecaService.registrarLectura(usuarioId, libroId);
+            return ResponseEntity.ok().build();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(403).body("Error al registrar lectura");
+        }
+    }
+
+    @PostMapping("/guardar-favoritos")
+    public ResponseEntity<?> registrarFavoritos(@RequestHeader("Authorization") String authHeader,
+                                              @RequestParam Long libroId) {
+        try {
+            String token = authHeader.replace("Bearer ", "");
+            Long usuarioId = jwtUtil.extraerIdUsuario(token);
+
+            if (jwtUtil.estaExpirado(token)) {
+                return ResponseEntity.status(401).body("Token expirado");
+            }
+
+            bibliotecaService.registrarFavoritos(usuarioId, libroId);
             return ResponseEntity.ok().build();
 
         } catch (Exception e) {

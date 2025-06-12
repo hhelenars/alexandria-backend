@@ -84,6 +84,23 @@ public class BibliotecaService {
         System.out.println(" Nueva lectura registrada: usuario=" + usuarioId + ", libro=" + libroId);
     }
 
+    public void registrarFavoritos(Long usuarioId, Long libroId) {
+        Biblioteca registroExistente = bibliotecaRepository.findByUsuarioId(usuarioId).stream()
+                .filter(b -> b.getLibroId().equals(libroId))
+                .findFirst()
+                .orElse(null);
+
+        if (registroExistente != null) {
+            if (!registroExistente.isEsFavorito()) {
+                registroExistente.setEsFavorito(true);
+                bibliotecaRepository.save(registroExistente);
+            } else {
+                System.out.println(" Ya estaba en favoritos: libroId=" + libroId);
+            }
+            return;
+        }
+    }
+
     public void guardarAnotaciones(Long usuarioId, Long libroId, Map<Integer, List<Anotacion>> nuevasAnotaciones) {
         bibliotecaRepository.findByUsuarioId(usuarioId).stream()
                 .filter(b -> b.getLibroId().equals(libroId))
