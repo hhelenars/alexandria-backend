@@ -1,6 +1,7 @@
 package com.alexandrianuevo.BackendAlexandriaNuevo.controller;
 
 import com.alexandrianuevo.BackendAlexandriaNuevo.model.Usuario;
+import com.alexandrianuevo.BackendAlexandriaNuevo.repository.UsuarioRepository;
 import com.alexandrianuevo.BackendAlexandriaNuevo.response.LoginResponse;
 import com.alexandrianuevo.BackendAlexandriaNuevo.service.UsuarioService;
 import com.alexandrianuevo.BackendAlexandriaNuevo.util.JwtUtil;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -21,6 +23,9 @@ public class UsuarioController {
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     @GetMapping("/login")
     public ResponseEntity<?> login(@RequestParam String email, @RequestParam String contrasena) {
@@ -45,5 +50,16 @@ public class UsuarioController {
 
 
         return exito ? ResponseEntity.ok("Usuario registrado correctamente") : ResponseEntity.status(HttpStatus.CONFLICT).body("Ya existe un usuario con ese email");
+    }
+
+    @GetMapping("/lista")
+    public List<Usuario> listarUsuarios(@RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.replace("Bearer ", "");
+        Long usuarioActualId = jwtUtil.extraerIdUsuario(token);
+        // Devuelve todos los usuarios menos el actual
+        return usuarioRepository.findAll()
+                .stream()
+                .filter(u -> !u.getId().equals(usuarioActualId))
+                .toList();
     }
 }
