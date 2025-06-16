@@ -66,7 +66,7 @@ public class BibliotecaController {
         }
     }
 
-    @PostMapping("/guardar-enlectura")
+    @PostMapping("/guardar/enlectura")
     public ResponseEntity<?> registrarLectura(@RequestHeader("Authorization") String authHeader,
                                               @RequestParam Long libroId) {
         try {
@@ -86,7 +86,28 @@ public class BibliotecaController {
         }
     }
 
-    @PostMapping("/guardar-favoritos")
+    @PutMapping("/eliminar/enlectura")
+    public ResponseEntity<?> eliminarLectura(@RequestHeader("Authorization") String authHeader,
+                                               @RequestParam Long libroId) {
+        try {
+            String token = authHeader.replace("Bearer ", "");
+            Long usuarioId = jwtUtil.extraerIdUsuario(token);
+
+            if (jwtUtil.estaExpirado(token)) {
+                return ResponseEntity.status(401).body("Token expirado");
+            }
+
+            bibliotecaService.eliminarLectura(usuarioId, libroId);
+            return ResponseEntity.ok().build();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(403).body("Error al eliminar lectura");
+        }
+
+    }
+
+    @PostMapping("/guardar/favoritos")
     public ResponseEntity<?> registrarFavoritos(@RequestHeader("Authorization") String authHeader,
                                               @RequestParam Long libroId) {
         try {
@@ -102,11 +123,33 @@ public class BibliotecaController {
 
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(403).body("Error al registrar lectura");
+            return ResponseEntity.status(403).body("Error al registrar favoritos");
         }
     }
 
-    @PostMapping("/guardar-anotaciones")
+    @PutMapping("/eliminar/favoritos")
+    public ResponseEntity<?> eliminarFavoritos(@RequestHeader("Authorization") String authHeader,
+                                                @RequestParam Long libroId) {
+        try {
+            String token = authHeader.replace("Bearer ", "");
+            Long usuarioId = jwtUtil.extraerIdUsuario(token);
+
+            if (jwtUtil.estaExpirado(token)) {
+                return ResponseEntity.status(401).body("Token expirado");
+            }
+
+            bibliotecaService.eliminarFavoritos(usuarioId, libroId);
+            return ResponseEntity.ok().build();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(403).body("Error al eliminar favoritos");
+        }
+
+    }
+
+
+    @PostMapping("/guardar/anotaciones")
     public ResponseEntity<?> guardarAnotaciones(
             @RequestHeader("Authorization") String authHeader,
             @RequestBody AnotacionesRequest request) {
@@ -129,7 +172,7 @@ public class BibliotecaController {
     }
 
 
-    @GetMapping("/recuperar-anotaciones")
+    @GetMapping("/recuperar/anotaciones")
     public ResponseEntity<?> obtenerAnotaciones(@RequestHeader("Authorization") String authHeader,
                                                 @RequestParam Long libroId) {
         try {

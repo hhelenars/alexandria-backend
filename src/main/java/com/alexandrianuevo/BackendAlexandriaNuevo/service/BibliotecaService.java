@@ -84,6 +84,24 @@ public class BibliotecaService {
         System.out.println(" Nueva lectura registrada: usuario=" + usuarioId + ", libro=" + libroId);
     }
 
+    public void eliminarLectura(Long usuarioId, Long libroId) {
+        Biblioteca registroExistente = bibliotecaRepository.findByUsuarioId(usuarioId).stream()
+                .filter(b -> b.getLibroId().equals(libroId))
+                .findFirst()
+                .orElse(null);
+
+        if (registroExistente != null) {
+            if (registroExistente.isEnLectura()) {
+                registroExistente.setEnLectura(false);
+                bibliotecaRepository.save(registroExistente);
+            } else {
+                System.out.println(" Ya estaba en favoritos: libroId=" + libroId);
+            }
+            return;
+        }
+    }
+
+
     public void registrarFavoritos(Long usuarioId, Long libroId) {
         Biblioteca registroExistente = bibliotecaRepository.findByUsuarioId(usuarioId).stream()
                 .filter(b -> b.getLibroId().equals(libroId))
@@ -100,6 +118,25 @@ public class BibliotecaService {
             return;
         }
     }
+
+    public void eliminarFavoritos(Long usuarioId, Long libroId) {
+        Biblioteca registroExistente = bibliotecaRepository.findByUsuarioId(usuarioId).stream()
+                .filter(b -> b.getLibroId().equals(libroId))
+                .findFirst()
+                .orElse(null);
+
+        if (registroExistente != null) {
+            if (registroExistente.isEsFavorito()) {
+                registroExistente.setEsFavorito(false);
+                bibliotecaRepository.save(registroExistente);
+            } else {
+                System.out.println(" Ya estaba en favoritos: libroId=" + libroId);
+            }
+            return;
+        }
+    }
+
+
 
     public void guardarAnotaciones(Long usuarioId, Long libroId, Map<Integer, List<Anotacion>> nuevasAnotaciones) {
         bibliotecaRepository.findByUsuarioId(usuarioId).stream()

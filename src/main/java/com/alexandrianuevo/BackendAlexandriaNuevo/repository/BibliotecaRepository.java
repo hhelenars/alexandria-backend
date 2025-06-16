@@ -18,4 +18,5 @@ public interface BibliotecaRepository extends JpaRepository<Biblioteca, Long> {
     // Obtener toda la biblioteca de un usuario
     List<Biblioteca> findByUsuarioId(Long usuarioId);
 
+
 }
