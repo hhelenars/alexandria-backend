@@ -28,6 +28,16 @@ public class LibroService {
                 .toList();
     }
 
+    public List<LibroResponse> buscarPorCategoria(String texto) {
+        return libroRepository.findByCategoriaIgnoreCase(texto).stream()
+                .map(libro -> new LibroResponse(libro.getId(), libro.getTitulo(), libro.getAutor()))
+                .toList();
+    }
+
+    public List<String> obtenerCategorias() {
+        return libroRepository.findDistinctCategorias();
+    }
+
     public List<LibroResponse> obtenerTodos() {
         return libroRepository.findAll().stream()
                 .map(libro -> new LibroResponse(libro.getId(), libro.getTitulo(), libro.getAutor()))

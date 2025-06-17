@@ -32,6 +32,22 @@ public class LibroController {
         return libroService.obtenerTodos();
     }
 
+    @GetMapping("/categorias")
+    public List<String> obtenerCategorias() {
+        return libroService.obtenerCategorias();
+    }
+
+    @GetMapping("/categorias/libros")
+    public ResponseEntity<List<LibroResponse>> obtenerLibrosPorCategorias(@RequestParam String categoria) {
+        List<LibroResponse> libros =  libroService.buscarPorCategoria(categoria);
+        if (libros != null) {
+            return ResponseEntity.ok(libros);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+
+    }
+
     @GetMapping("/archivo-url")
     public ResponseEntity<String> obtenerArchivoUrl(@RequestParam  Long id) {
         String archivoUrl = libroService.obtenerNombreArchivo(id);
