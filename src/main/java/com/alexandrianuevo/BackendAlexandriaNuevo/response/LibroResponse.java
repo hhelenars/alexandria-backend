@@ -4,11 +4,13 @@ public class LibroResponse {
     private Long id;
     private String titulo;
     private String autor;
+    private String categoria;
 
-    public LibroResponse(Long id, String titulo, String autor) {
+    public LibroResponse(Long id, String titulo, String autor, String categoria) {
         this.id = id;
         this.titulo = titulo;
         this.autor = autor;
+        this.categoria = categoria;
     }
 
     // Getters y setters
@@ -22,5 +24,9 @@ public class LibroResponse {
 
     public String getAutor() {
         return autor;
+    }
+
+    public String getCategoria() {
+        return categoria;
     }
 }

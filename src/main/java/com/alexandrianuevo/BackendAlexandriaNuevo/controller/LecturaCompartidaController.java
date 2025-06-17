@@ -74,7 +74,7 @@ public class LecturaCompartidaController {
         for (LecturaCompartida compartida : compartidas) {
             Libro libro = libroRepository.findById(compartida.getLibroId()).orElse(null);
             if (libro != null) {
-                respuesta.add(new LibroResponse(libro.getId(), libro.getTitulo(), libro.getAutor()));
+                respuesta.add(new LibroResponse(libro.getId(), libro.getTitulo(), libro.getAutor(), libro.getCategoria()));
             }
         }
         return respuesta;
