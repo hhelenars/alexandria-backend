@@ -24,6 +24,7 @@ public class LibroController {
     @GetMapping("/buscar")
     public List<LibroResponse> buscarPorTituloOAutor(@RequestParam String texto) {
         return libroService.buscarPorTituloOAutor(texto);
+
     }
 
     // Obtener todos los libros

@@ -4,7 +4,6 @@ public class LibroResponse {
     private Long id;
     private String titulo;
     private String autor;
-
     private String categoria;
 
     public LibroResponse(Long id, String titulo, String autor, String categoria) {
@@ -28,6 +27,6 @@ public class LibroResponse {
     }
 
     public String getCategoria() {
-        return autor;
+        return categoria;
     }
 }
