@@ -74,7 +74,7 @@ public class LecturaCompartidaController {
         for (LecturaCompartida compartida : compartidas) {
             Libro libro = libroRepository.findById(compartida.getLibroId()).orElse(null);
             if (libro != null) {
-                respuesta.add(new LibroResponse(libro.getId(), libro.getTitulo(), libro.getAutor()));
+                respuesta.add(new LibroResponse(libro.getId(), libro.getTitulo(), libro.getAutor(),  libro.getCategoria()));
             }
         }
         return respuesta;
@@ -102,7 +102,6 @@ public class LecturaCompartidaController {
 
         return ResponseEntity.ok(lectura.getAnotaciones());
     }
-
 
     @PostMapping("/lecturas-compartidas/{lecturaCompartidaId}/anotaciones")
     public ResponseEntity<Void> guardarAnotacionesCompartidas(

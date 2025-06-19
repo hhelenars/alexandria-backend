@@ -24,13 +24,13 @@ public class LibroService {
         List<Libro> libros = libroRepository.findByTituloContainingIgnoreCaseOrAutorContainingIgnoreCase(texto, texto);
         libros.sort(new LibroComparator(texto));
         return libros.stream()
-                .map(libro -> new LibroResponse(libro.getId(), libro.getTitulo(), libro.getAutor()))
+                .map(libro -> new LibroResponse(libro.getId(), libro.getTitulo(), libro.getAutor(),  libro.getCategoria()))
                 .toList();
     }
 
     public List<LibroResponse> buscarPorCategoria(String texto) {
         return libroRepository.findByCategoriaIgnoreCase(texto).stream()
-                .map(libro -> new LibroResponse(libro.getId(), libro.getTitulo(), libro.getAutor()))
+                .map(libro -> new LibroResponse(libro.getId(), libro.getTitulo(), libro.getAutor(),  libro.getCategoria()))
                 .toList();
     }
 
@@ -40,7 +40,7 @@ public class LibroService {
 
     public List<LibroResponse> obtenerTodos() {
         return libroRepository.findAll().stream()
-                .map(libro -> new LibroResponse(libro.getId(), libro.getTitulo(), libro.getAutor()))
+                .map(libro -> new LibroResponse(libro.getId(), libro.getTitulo(), libro.getAutor(),  libro.getCategoria()))
                 .toList();
     }
 

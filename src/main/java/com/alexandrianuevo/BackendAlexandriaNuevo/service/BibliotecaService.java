@@ -31,7 +31,7 @@ public class BibliotecaService {
 
         for (Biblioteca registro : registros) {
             libroRepository.findById(registro.getLibroId()).ifPresent(libro -> {
-                favoritos.add(new LibroResponse(libro.getId(), libro.getTitulo(), libro.getAutor()));
+                favoritos.add(new LibroResponse(libro.getId(), libro.getTitulo(), libro.getAutor(), libro.getCategoria()));
             });
         }
         return favoritos;
@@ -45,7 +45,7 @@ public class BibliotecaService {
 
         for (Biblioteca registro : registros) {
             libroRepository.findById(registro.getLibroId()).ifPresent(libro -> {
-                lecturas.add(new LibroResponse(libro.getId(), libro.getTitulo(), libro.getAutor()));
+                lecturas.add(new LibroResponse(libro.getId(), libro.getTitulo(), libro.getAutor(),  libro.getCategoria()));
             });
             System.out.println(registro.getId());
         }
